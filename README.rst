@@ -1,3 +1,7 @@
+.. image:: https://coveralls.io/repos/github/smartfile/django-session-jwt/badge.svg?branch=master
+:target: https://coveralls.io/github/smartfile/django-session-jwt?branch=master
+
+
 django-session-jwt
 ==================
 
