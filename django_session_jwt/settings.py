@@ -76,13 +76,10 @@ TEMPLATE_LOADERS = (
 
 MIDDLEWARE = (
     'django.middleware.common.CommonMiddleware',
-    #'django.contrib.sessions.middleware.SessionMiddleware',
+    'django_session_jwt.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    # Uncomment the next line for simple clickjacking protection:
-    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_session_jwt.middleware.SessionMiddleware',
 )
 
 # For older Django versions
@@ -109,7 +106,7 @@ INSTALLED_APPS = (
 )
 
 DJANGO_SESSION_JWT = {
-    'fields': ('id', 'username', 'email', ),
-    'key': SECRET_KEY,
+    'FIELDS': ('id', ('username', 'un'), ('email', 'e'), ),
+    'KEY': SECRET_KEY,
 }
 
