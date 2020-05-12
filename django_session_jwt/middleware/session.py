@@ -92,7 +92,7 @@ class SessionMiddleware(BaseSessionMiddleware):
         # Rather than duplicating the session logic here, just allow super()
         # to do it's thing, then convert the session cookie (if any) when it's
         # done.
-        super().process_response(request, response)
+        super(SessionMiddleware, self).process_response(request, response)
         try:
             session_key = response.cookies[settings.SESSION_COOKIE_NAME].value
             response.cookies[settings.SESSION_COOKIE_NAME] = \
