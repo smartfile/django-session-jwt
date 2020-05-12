@@ -7,7 +7,7 @@ python:
 env:
   - DJANGO=1.11
   - DJANGO=2.0
-    matrix:
+matrix:
   exclude:
     - python: "2.7"
       env: DJANGO=2.0
