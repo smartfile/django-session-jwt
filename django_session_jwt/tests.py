@@ -72,7 +72,10 @@ class ViewTestCase(BaseTestCase):
 
     def test_session(self):
         "Test persisting session data"
-        r = self.client.post('/set/', { 'a': 12345, 'b': 'abcde' })
+        r = self.client.post('/set/', { 'a': '12345', 'b': 'abcde' })
         self.assertEqual(r.status_code, 200)
         r = self.client.get('/get/')
         self.assertEqual(r.status_code, 200)
+        json = r.json()
+        self.assertEqual(json['a'], '12345')
+        self.assertEqual(json['b'], 'abcde')
