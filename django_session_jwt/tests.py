@@ -1,4 +1,8 @@
-from unittest import mock
+try:
+    from unittest import mock
+
+except ImportError:
+    import mock
 
 from os.path import dirname, normpath
 from os.path import join as pathjoin
