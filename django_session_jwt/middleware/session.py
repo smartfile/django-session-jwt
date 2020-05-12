@@ -1,4 +1,7 @@
 import logging
+
+from os.path import exists as pathexists
+
 import jwt
 from jwt.exceptions import DecodeError
 
@@ -9,7 +12,21 @@ from django.utils.deprecation import MiddlewareMixin
 from django.contrib.sessions.middleware import SessionMiddleware as BaseSessionMiddleware
 
 
-KEY = getattr(settings, 'DJANGO_SESSION_JWT', {}).get('KEY', settings.SECRET_KEY)
+def _parse_key(key):
+    def _load_key(k):
+        if pathexists(k):
+            k = open(k, 'rb').read()
+        return k
+
+    if type(key) is tuple:
+        # Key pair.
+        return _load_key(key[0]), _load_key(key[1]), 'RS256'
+
+    key = _load_key(key)
+    return key, key, 'HS256'
+
+
+KEY, PUBKEY, ALGO = _parse_key(getattr(settings, 'DJANGO_SESSION_JWT', {}).get('KEY', settings.SECRET_KEY))
 FIELDS = getattr(settings, 'DJANGO_SESSION_JWT', {}).get('FIELDS', [])
 LOGGER = logging.getLogger(__name__)
 LOGGER.addHandler(logging.NullHandler())
@@ -20,7 +37,7 @@ def verify_jwt(blob):
     Verify a JWT and return the session_key attribute from it.
     """
     try:
-        fields = jwt.decode(blob, KEY, algorithms=['HS256'])
+        fields = jwt.decode(blob, PUBKEY, algorithms=[ALGO])
 
     except DecodeError:
         return {}
@@ -58,7 +75,7 @@ def create_jwt(user, session_key):
             LOGGER.warning('Could not get missing field %s from user', field_name)
             continue
 
-    return jwt.encode(fields, KEY, algorithm='HS256').decode('utf8')
+    return jwt.encode(fields, KEY, algorithm=ALGO).decode('utf8')
 
 
 class SessionMiddleware(BaseSessionMiddleware):

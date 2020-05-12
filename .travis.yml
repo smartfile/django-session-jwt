@@ -12,6 +12,7 @@ matrix:
     - python: "2.7"
       env: DJANGO=2.0
 install:
+  - pipenv install --system
   - pip install --timeout=30 -q Django==$DJANGO
   - pip install --timeout=30 -q -e .
 script:

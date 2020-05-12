@@ -1,8 +1,13 @@
+from unittest import mock
+
+from os.path import dirname, normpath
+from os.path import join as pathjoin
+
 from django.conf import settings
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 
-from .middleware.session import verify_jwt, create_jwt
+from .middleware import session
 
 
 User = get_user_model()
@@ -26,9 +31,25 @@ class JWTTestCase(BaseTestCase):
     def test_create(self):
         "Test JWT creation / verification"
         session_key = '1234abcdef'
-        jwt = create_jwt(self.user, session_key)
-        fields = verify_jwt(jwt)
+        jwt = session.create_jwt(self.user, session_key)
+        fields = session.verify_jwt(jwt)
         self.assertEqual(fields['sk'], session_key)
+
+    def test_asymmetrical(self):
+        "Test using RSA key"
+        key, pubkey, algo = session._parse_key((
+            normpath(pathjoin(dirname(__file__), '../keys/rsa')),
+            normpath(pathjoin(dirname(__file__), '../keys/rsa.pub'))
+        ))
+
+        with mock.patch('django_session_jwt.middleware.session.ALGO', algo), \
+             mock.patch('django_session_jwt.middleware.session.KEY', key):
+            session_key = '1234abcdef'
+            jwt = session.create_jwt(self.user, session_key)
+        with mock.patch('django_session_jwt.middleware.session.ALGO', algo), \
+             mock.patch('django_session_jwt.middleware.session.PUBKEY', pubkey):
+            fields = session.verify_jwt(jwt)
+            self.assertEqual(fields['sk'], session_key)
 
 
 class ViewTestCase(BaseTestCase):
@@ -40,7 +61,7 @@ class ViewTestCase(BaseTestCase):
         "Test logging in a user"
         r = self.client.post('/login/', {'username': 'john', 'password': 'password'})
         self.assertEqual(r.status_code, 200)
-        fields = verify_jwt(r.cookies[settings.SESSION_COOKIE_NAME].value)
+        fields = session.verify_jwt(r.cookies[settings.SESSION_COOKIE_NAME].value)
         self.assertTrue('id' in fields)
         self.assertTrue('username' in fields)
         self.assertTrue('email' in fields)
