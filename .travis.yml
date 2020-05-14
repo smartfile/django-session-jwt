@@ -29,6 +29,6 @@ install:
   - pip install --timeout=30 -q Django==$DJANGO
   - pip install --timeout=30 -q -e .
 script:
-  - make test
+  - make ci
 after_success:
   - coveralls
