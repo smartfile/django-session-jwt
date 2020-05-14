@@ -1,34 +1,47 @@
 language: python
 python:
-  - "2.7"
-  - "3.4"
-  - "3.5"
-  - "3.6"
+- '2.7'
+- '3.4'
+- '3.5'
+- '3.6'
 env:
-  - DJANGO=1.11
-  - DJANGO=2.0
-  - DJANGO=2.2
-  - DJANGO=3.0
+- DJANGO=1.11
+- DJANGO=2.0
+- DJANGO=2.2
+- DJANGO=3.0
 matrix:
   exclude:
-    - python: "2.7"
-      env: DJANGO=2.0
-    - python: "2.7"
-      env: DJANGO=2.2
-    - python: "2.7"
-      env: DJANGO=3.0
-    - python: "3.4"
-      env: DJANGO=2.2
-    - python: "3.4"
-      env: DJANGO=3.0
-    - python: "3.5"
-      env: DJANGO=3.0
+  - python: '2.7'
+    env: DJANGO=2.0
+  - python: '2.7'
+    env: DJANGO=2.2
+  - python: '2.7'
+    env: DJANGO=3.0
+  - python: '3.4'
+    env: DJANGO=2.2
+  - python: '3.4'
+    env: DJANGO=3.0
+  - python: '3.5'
+    env: DJANGO=3.0
 install:
-  - python -m pip install -U pip==18.0
-  - pipenv install --skip-lock
-  - pip install --timeout=30 -q Django==$DJANGO
-  - pip install --timeout=30 -q -e .
+- python -m pip install -U pip==18.0
+- pipenv install --skip-lock
+- pip install --timeout=30 -q Django==$DJANGO
+- pip install --timeout=30 -q -e .
 script:
-  - make ci
+- make ci
 after_success:
-  - coveralls
+- coveralls
+jobs:
+  include:
+  - stage: deploy
+    python: '3.6'
+    env: DJANGO=1.11
+    script: echo "Deploying to PyPI ..."
+    deploy:
+      provider: pypi
+      user: Ben.Timby
+      password:
+        secure: kwJP8NBERd2IznC7PV64/o9BIVUl2X3kCC7zMiGQHES5PQdBQDvRAXH4AcZ03znD2GgLITA45aipucTU4Ct4F0vcwGbzwIu3dKU5tIIer5OpyY9SyB3Ew2GD6FYvsmmMfA6ztV6yMRyxu6LdgK6MouEZ9jUlRQfC/Hv4uzrb082uH9oA3fn7KM+MRBC/BseyXOF5vA5EOfAirb/OIrX2juQPLWvtNuNpd4VkqnY6cRPTtNNmZmV0QCddJdEZgFcsZFkr1V3jqCoEpIbKR3wshPvEzJsmYCtcQkdfvVWPWaJzmKF35/7qUtJXuYoOrClq6/qAQVvV7OayXGYYkO4WWSivrGkV9IBvczTUThgEaVJl0q80CrvC41M4rjHtx5q+z8rCSmbhIHCYWm2o4uBm+tjx9V2I52/L/m/V4DmTcU22zd1nXy2ZZdJVMjmurHqGwo6QgPZ2pG5AY6QMMcOPfupE0LUHfhWZa6/2GH8madt8ONK8sdoJMwOyYOCENcLHEJTikKO8gA+htOqzzlxzzXmCm1suXFF072w2DsnVlyHtx3sDCEN4nB2W0z5g/wBfVS+RnX2mzEtwXtgqQ9fuEjKPjnrhc6Kf4XRBx1FiYNKrVDagUpEBn1+suz9YvqagtiwEXK4rMh4Pq57rniHG12pvuajFjiELEeRvumKYCbk=
+      on:
+        tags: true
