@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 
 from os.path import exists as pathexists
 
@@ -53,13 +54,17 @@ def verify_jwt(blob):
     return fields
 
 
-def create_jwt(user, session_key):
+def create_jwt(user, session_key, expires=None):
     """
     Create a JWT for the given user containing the configured fields.
     """
     fields = {
         'sk': session_key,
+        'iat': datetime.utcnow(),
     }
+    if expires:
+        # Thu, 28 May 2020 19:17:13 GMT
+        fields['exp'] = datetime.strptime(expires, '%a, %d %b %Y %H:%M:%S %Z')
     for field_name in FIELDS:
         if type(field_name) is tuple:
             lname, sname = field_name
@@ -94,9 +99,9 @@ class SessionMiddleware(BaseSessionMiddleware):
         # done.
         super(SessionMiddleware, self).process_response(request, response)
         try:
-            session_key = response.cookies[settings.SESSION_COOKIE_NAME].value
+            cookie = response.cookies[settings.SESSION_COOKIE_NAME]
             response.cookies[settings.SESSION_COOKIE_NAME] = \
-                create_jwt(request.user, session_key)
+                create_jwt(request.user, cookie.value, cookie.get('expires'))
 
         except (KeyError, AttributeError):
             # No cookie, no problem...
