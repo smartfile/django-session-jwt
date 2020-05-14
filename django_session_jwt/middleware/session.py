@@ -64,6 +64,8 @@ def create_jwt(user, session_key, expires=None):
     }
     if expires:
         # Thu, 28 May 2020 19:17:13 GMT
+        # Django 2.0, 1.11 have - chars in date...
+        expires = expires.replace('-', ' ')
         fields['exp'] = datetime.strptime(expires, '%a, %d %b %Y %H:%M:%S %Z')
     for field_name in FIELDS:
         if type(field_name) is tuple:
