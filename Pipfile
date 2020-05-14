@@ -12,6 +12,7 @@ cryptography = "*"
 mock = "*"
 coveralls = "*"
 coverage = "*"
+pylint = "*"
 
 [requires]
 python_version = "3.6"

@@ -57,3 +57,22 @@ Once installed and configured, the browser will send the session cookie with eac
 You can use a symmetric key or asymmetric key pair. In the simplest case, you can set ``DJANGO_SESSION_JWT['KEY'] = SECRET_KEY``. You will then need to distribute the `SECRET_KEY` to all federated services. Another option is to use an asymmetric key pair such as an RSA key pair. This way the Django application alone holds the private key for signing JWTs while federated services hold only the public key for verifying the signature. A hybrid configuration might share the private key with a number of federated services for the purpose of issuing or extending JWTs while limiting other services to just the public key.
 
 No library is provided for consuming the JWT, federated services should use available JWT libraries for verifying and extracting fields from the JWT.
+
+Development
+-----------
+
+To deploy to PyPI:
+
+::
+
+    git tag <version>
+    git push --tags
+
+Travis CI will do the rest.
+
+Tests and linting:
+
+::
+
+    make test
+    make lint
