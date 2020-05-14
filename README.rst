@@ -4,6 +4,9 @@
 .. image:: https://travis-ci.org/smartfile/django-session-jwt.svg?branch=master
     :target: https://travis-ci.org/smartfile/django-session-jwt
 
+.. image:: https://badge.fury.io/py/django-session-jwt.svg
+    :target: https://badge.fury.io/py/django-session-jwt
+
 django-session-jwt
 ==================
 
