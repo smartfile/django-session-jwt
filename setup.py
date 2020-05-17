@@ -5,6 +5,8 @@ from os.path import join as pathjoin
 from os.path import dirname
 from subprocess import check_output, CalledProcessError
 from setuptools import setup
+from setuptools import find_packages
+
 
 package_name = 'django-session-jwt'
 readme = os.path.join(os.path.dirname(__file__), 'README.rst')
@@ -41,9 +43,7 @@ setup(
     install_requires = [
         'pyjwt',
     ],
-    packages = [
-        "django_session_jwt",
-    ],
+    packages = find_packages(),
     classifiers = (
           'Development Status :: 4 - Beta',
           'Intended Audience :: Developers',
