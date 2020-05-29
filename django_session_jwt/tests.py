@@ -87,3 +87,7 @@ class TestClientTestCase(BaseTestCase):
         "Test logging in a user using Client.login()"
         ret = self.client.login(username='john', password='password')
         self.assertTrue(ret)
+        fields = session.verify_jwt(self.client.cookies[settings.SESSION_COOKIE_NAME].value)
+        self.assertTrue('id' in fields)
+        self.assertTrue('username' in fields)
+        self.assertTrue('email' in fields)
