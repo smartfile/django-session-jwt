@@ -63,6 +63,8 @@ Django Tests
 
 When using Django's test client in unit tests, the login() method bypasses middleware and sets the session cookie directly. If you are using ``django-session-jwt`` this may cause tests to fail. In this case, you can use an alternative test client ``django_session_jwt.test.Client`` that overrides the ``login()`` method to convert the sessoin cookie to a JWT.
 
+Here is an `example <django_session_jwt/tests.py#L85>`_ of using this test client.
+
 Development
 -----------
 
