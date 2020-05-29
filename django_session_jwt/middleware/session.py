@@ -85,6 +85,12 @@ def create_jwt(user, session_key, expires=None):
     return jwt.encode(fields, KEY, algorithm=ALGO).decode('utf8')
 
 
+def convert_cookie(cookies, user):
+    cookie = cookies[settings.SESSION_COOKIE_NAME]
+    cookies[settings.SESSION_COOKIE_NAME] = create_jwt(
+        user, cookie.value, cookie.get('expires'))
+
+
 class SessionMiddleware(BaseSessionMiddleware):
     """
     Extend django.contrib.sessions middleware to use JWT as session cookie.
@@ -101,9 +107,7 @@ class SessionMiddleware(BaseSessionMiddleware):
         # done.
         super(SessionMiddleware, self).process_response(request, response)
         try:
-            cookie = response.cookies[settings.SESSION_COOKIE_NAME]
-            response.cookies[settings.SESSION_COOKIE_NAME] = \
-                create_jwt(request.user, cookie.value, cookie.get('expires'))
+            convert_cookie(response.cookies, request.user)
 
         except (KeyError, AttributeError):
             # No cookie, no problem...
