@@ -8,10 +8,11 @@ from os.path import dirname, normpath
 from os.path import join as pathjoin
 
 from django.conf import settings
-from django.test import TestCase, Client
+from django.test import TestCase
 from django.contrib.auth import get_user_model
 
-from .middleware import session
+from django_session_jwt.middleware import session
+from django_session_jwt.test import Client
 
 
 User = get_user_model()
@@ -62,7 +63,7 @@ class ViewTestCase(BaseTestCase):
     """
 
     def test_login(self):
-        "Test logging in a user"
+        "Test logging in a user via POST"
         r = self.client.post('/login/', {'username': 'john', 'password': 'password'})
         self.assertEqual(r.status_code, 200)
         fields = session.verify_jwt(r.cookies[settings.SESSION_COOKIE_NAME].value)
@@ -79,3 +80,14 @@ class ViewTestCase(BaseTestCase):
         json = r.json()
         self.assertEqual(json['a'], '12345')
         self.assertEqual(json['b'], 'abcde')
+
+
+class TestClientTestCase(BaseTestCase):
+    def test_login(self):
+        "Test logging in a user using Client.login()"
+        ret = self.client.login(username='john', password='password')
+        self.assertTrue(ret)
+        fields = session.verify_jwt(self.client.cookies[settings.SESSION_COOKIE_NAME].value)
+        self.assertTrue('id' in fields)
+        self.assertTrue('username' in fields)
+        self.assertTrue('email' in fields)
