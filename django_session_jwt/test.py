@@ -4,8 +4,7 @@ from django.conf import settings
 from django.test.client import Client as BaseClient
 from django.contrib.auth import SESSION_KEY, get_user_model
 
-from django_session_jwt.middleware import convert_cookie
-from django_session_jwt.middleware.session import verify_jwt
+from django_session_jwt.middleware import convert_cookie, verify_jwt
 
 
 User = get_user_model()

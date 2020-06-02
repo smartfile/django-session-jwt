@@ -1,1 +1,1 @@
-from .session import SessionMiddleware, convert_cookie
+from .session import SessionMiddleware, convert_cookie, verify_jwt
