@@ -158,6 +158,12 @@ class SessionMiddleware(BaseSessionMiddleware):
         # to do it's thing, then convert the session cookie (if any) when it's
         # done.
         super(SessionMiddleware, self).process_response(request, response)
+
+        # Behave the same as contrib.sessions, only recreate the JWT if the session
+        # was modified or SESSION_SAVE_EVERY_REQUEST is enabled.
+        if not request.session.modified and not settings.SESSION_SAVE_EVERY_REQUEST:
+            return response
+
         try:
             convert_cookie(response.cookies, request.user)
 
