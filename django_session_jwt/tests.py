@@ -67,9 +67,12 @@ class ViewTestCase(BaseTestCase):
         r = self.client.post('/login/', {'username': 'john', 'password': 'password'})
         self.assertEqual(r.status_code, 200)
         fields = session.verify_jwt(r.cookies[settings.SESSION_COOKIE_NAME].value)
-        self.assertTrue('id' in fields)
-        self.assertTrue('username' in fields)
-        self.assertTrue('email' in fields)
+        self.assertTrue('id' in fields)       # short form
+        self.assertTrue('user_id' in fields)  # long form
+        self.assertTrue('u' in fields)        # short form
+        self.assertTrue('username' in fields) # long form
+        self.assertTrue('e' in fields)        # short form
+        self.assertTrue('email' in fields)    # long form
 
     def test_session(self):
         "Test persisting session data"
@@ -88,6 +91,9 @@ class TestClientTestCase(BaseTestCase):
         ret = self.client.login(username='john', password='password')
         self.assertTrue(ret)
         fields = session.verify_jwt(self.client.cookies[settings.SESSION_COOKIE_NAME].value)
-        self.assertTrue('id' in fields)
-        self.assertTrue('username' in fields)
-        self.assertTrue('email' in fields)
+        self.assertTrue('id' in fields)       # short form
+        self.assertTrue('user_id' in fields)  # long form
+        self.assertTrue('u' in fields)        # short form
+        self.assertTrue('username' in fields) # long form
+        self.assertTrue('e' in fields)        # short form
+        self.assertTrue('email' in fields)    # long form

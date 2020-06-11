@@ -106,7 +106,21 @@ INSTALLED_APPS = (
 )
 
 DJANGO_SESSION_JWT = {
-    'FIELDS': ('id', ('username', 'un'), ('email', 'e'), ),
+    # FIELDS should consist of tuples of (attrname, sname, lname) where:
+    # - attrname is the name of a user object attribute. This can reference a
+    #   nested object by using periods: related_object.attribute_name.
+    # - sname is the short form of this name, ideally a single char (unique).
+    #   this form is used within the JWT itself and should be short to reduce
+    #   storage.
+    # - lname is the long form of the name. This is the name that can be used
+    #   to access this value after the JWT is verified.
+    'FIELDS': [
+        ('id', 'id', 'user_id'),
+        ('username', 'u', 'username'),
+        ('email', 'e', 'email'),
+    ],
     'KEY': SECRET_KEY,
+    # The default, uncomment to override:
+    # 'SESSION_FIELD': 'sk',
 }
 
