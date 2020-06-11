@@ -33,19 +33,32 @@ Then modify settings.py:
     SESSION_COOKIE_NAME='sessionid'
 
     DJANGO_SESSION_JWT = {
-        'FIELDS': (
-            'a list',
-            ('of attributes', 'a'),
-            'of the user',
-            ('object to place', 'p'),
-            'in the jwt',
-        ),
+        # Fields allow you to specify which attributes of the user object will be stored
+        # in the JWT (and copied to the session).
+        'FIELDS': [
+            # You can provide all three options:
+            ('attribute_name', 'short form', 'long form'),
+
+            # Short and long forms can be the same by omitting one.
+            ('attribute_name', 'both forms'),
+
+            # The attribute_name can reference nested attributes by using period(s). also
+            # the field can be a string, in which case the attribute name is used as both
+            # the long and short forms.
+            'related_object.attribute_name',
+            ...
+        ],
+
+        # KEY can also be a tuple in order to specify public and private keys.
         'KEY': 'string value or path to PEM key file',
-        ,
+
+        # The session field is used to store the session key within the JWT. The default
+        # is 'sk' but it can be overridden.
+        'SESSION_FIELD': 'sk',
         ...
     }
 
-As an optimization, the ``FIELDS`` list can contain tuples ``('field_name', 'sn')`` providing a short name for the field. The JWT will contain the short name, but it will be converted when decoded. This can help reduce the size of the jWT.
+As an optimization, the ``FIELDS`` list can contain tuples ``('attribute_name', 'short form', 'long form')`` providing a short name for the field. The JWT key will use the short form, but it will be converted to the long form when decoded. This can help reduce the size of the jWT.
 
 Using the JWT
 -------------

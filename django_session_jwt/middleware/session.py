@@ -148,8 +148,10 @@ class SessionMiddleware(BaseSessionMiddleware):
 
     def process_request(self, request):
         session_jwt = request.COOKIES.get(settings.SESSION_COOKIE_NAME)
-        session_key = verify_jwt(session_jwt).get(SESSION_FIELD)
+        fields = verify_jwt(session_jwt)
+        session_key = fields.pop(SESSION_FIELD, None)
         request.session = self.SessionStore(session_key)
+        request.session['jwt'] = fields
 
     def process_response(self, request, response):
         # Rather than duplicating the session logic here, just allow super()
