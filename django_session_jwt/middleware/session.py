@@ -1,10 +1,10 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from os.path import exists as pathexists
 
 import jwt
-from jwt.exceptions import DecodeError
+from jwt.exceptions import DecodeError, ExpiredSignatureError
 
 from importlib import import_module
 
@@ -72,9 +72,11 @@ def _parse_fields(fields):
     return fields
 
 
-SESSION_FIELD = getattr(settings, 'DJANGO_SESSION_JWT', {}).get('SESSION_FIELD', 'sk')
-KEY, PUBKEY, ALGO = _parse_key(getattr(settings, 'DJANGO_SESSION_JWT', {}).get('KEY', settings.SECRET_KEY))
-FIELDS = _parse_fields(getattr(settings, 'DJANGO_SESSION_JWT', {}).get('FIELDS', []))
+DJANGO_SESSION_JWT = getattr(settings, 'DJANGO_SESSION_JWT', {})
+SESSION_FIELD = DJANGO_SESSION_JWT.get('SESSION_FIELD', 'sk')
+KEY, PUBKEY, ALGO = _parse_key(DJANGO_SESSION_JWT.get('KEY', settings.SECRET_KEY))
+FIELDS = _parse_fields(DJANGO_SESSION_JWT.get('FIELDS', []))
+EXPIRES = DJANGO_SESSION_JWT.get('EXPIRES', None)
 LOGGER = logging.getLogger(__name__)
 LOGGER.addHandler(logging.NullHandler())
 
@@ -94,7 +96,7 @@ def verify_jwt(blob):
     try:
         fields = jwt.decode(blob, PUBKEY, algorithms=[ALGO])
 
-    except DecodeError:
+    except (DecodeError, ExpiredSignatureError):
         return {}
 
     # Convert short names to long names.
@@ -118,10 +120,8 @@ def create_jwt(user, session_key, expires=None):
         'iat': datetime.utcnow(),
     }
     if expires:
-        # Thu, 28 May 2020 19:17:13 GMT
-        # Django 2.0, 1.11 have - chars in date...
-        expires = expires.replace('-', ' ')
-        fields['exp'] = datetime.strptime(expires, '%a, %d %b %Y %H:%M:%S %Z')
+        # Set a future expiration date.
+        fields['exp'] = datetime.now() + timedelta(seconds=expires)
 
     for attrname, sname, _ in FIELDS:
         try:
@@ -138,7 +138,7 @@ def create_jwt(user, session_key, expires=None):
 def convert_cookie(cookies, user):
     cookie = cookies[settings.SESSION_COOKIE_NAME]
     cookies[settings.SESSION_COOKIE_NAME] = create_jwt(
-        user, cookie.value, cookie.get('expires'))
+        user, cookie.value, EXPIRES)
 
 
 class SessionMiddleware(BaseSessionMiddleware):
@@ -149,6 +149,7 @@ class SessionMiddleware(BaseSessionMiddleware):
     def process_request(self, request):
         session_jwt = request.COOKIES.get(settings.SESSION_COOKIE_NAME)
         fields = verify_jwt(session_jwt)
+
         session_key = fields.pop(SESSION_FIELD, None)
         request.session = self.SessionStore(session_key)
         request.session['jwt'] = fields
@@ -159,9 +160,14 @@ class SessionMiddleware(BaseSessionMiddleware):
         # done.
         super(SessionMiddleware, self).process_response(request, response)
 
+        # Determine if JWT is more than halfway through it's lifetime.
+        expires = getattr(request, 'session', {}).get('jwt', {}).get('exp', None)
+        halflife = expires and expires <= (datetime.now() + timedelta(seconds=EXPIRES / 2)).timestamp()
+
         # Behave the same as contrib.sessions, only recreate the JWT if the session
         # was modified or SESSION_SAVE_EVERY_REQUEST is enabled.
-        if not request.session.modified and not settings.SESSION_SAVE_EVERY_REQUEST:
+        if not halflife and not request.session.modified and \
+           not settings.SESSION_SAVE_EVERY_REQUEST:
             return response
 
         try:

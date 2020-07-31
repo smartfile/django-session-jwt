@@ -122,5 +122,6 @@ DJANGO_SESSION_JWT = {
     'KEY': SECRET_KEY,
     # The default, uncomment to override:
     # 'SESSION_FIELD': 'sk',
+    'EXPIRES': 60 * 60 * 8,
 }
 
