@@ -28,12 +28,8 @@ class Client(BaseClient):
         engine = import_module(settings.SESSION_ENGINE)
         cookie = self.cookies.get(settings.SESSION_COOKIE_NAME)
         if cookie:
-            try:
-                sk = verify_jwt(cookie.value).get('sk', cookie.value)
-                return engine.SessionStore(sk)
-
-            except DecodeError:
-                pass
+            sk = verify_jwt(cookie.value).get('sk', cookie.value)
+            return engine.SessionStore(sk)
 
         session = engine.SessionStore()
         session.save()
