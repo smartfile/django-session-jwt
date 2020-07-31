@@ -1,3 +1,5 @@
+import time
+
 try:
     from unittest import mock
 
@@ -93,8 +95,10 @@ class ViewTestCase(BaseTestCase):
         fields = session.verify_jwt(r.cookies[settings.SESSION_COOKIE_NAME].value)
         # JWT expiration should exceed cookie expiration.
         expires = r.cookies[settings.SESSION_COOKIE_NAME]['expires']
+        # Normalize date format (different Django versions use - or <space>)
+        expires = expires.replace('-', ' ')
         # format: "Fri, 14 Aug 2020 19:27:28 GMT"
-        expires = int(datetime.strptime(expires, '%a, %d %b %Y %H:%M:%S %Z').timestamp())
+        expires = int(time.mktime(datetime.strptime(expires, '%a, %d %b %Y %H:%M:%S %Z').timetuple()))
         self.assertGreater(expires, fields['exp'])
         
 

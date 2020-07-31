@@ -1,4 +1,6 @@
 import logging
+import time
+
 from datetime import datetime, timedelta
 
 from os.path import exists as pathexists
@@ -162,7 +164,8 @@ class SessionMiddleware(BaseSessionMiddleware):
 
         # Determine if JWT is more than halfway through it's lifetime.
         expires = getattr(request, 'session', {}).get('jwt', {}).get('exp', None)
-        halflife = expires and expires <= (datetime.now() + timedelta(seconds=EXPIRES / 2)).timestamp()
+        halftime = time.mktime((datetime.now() + timedelta(seconds=EXPIRES / 2)).timetuple())
+        halflife = expires and expires <= halftime
 
         # Behave the same as contrib.sessions, only recreate the JWT if the session
         # was modified or SESSION_SAVE_EVERY_REQUEST is enabled.
