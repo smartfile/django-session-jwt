@@ -1,7 +1,5 @@
 from importlib import import_module
 
-from jwt.exceptions import DecodeError
-
 from django.conf import settings
 from django.test.client import Client as BaseClient
 from django.contrib.auth import SESSION_KEY, get_user_model
