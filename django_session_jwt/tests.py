@@ -1,3 +1,5 @@
+import time
+
 try:
     from unittest import mock
 
@@ -6,6 +8,8 @@ except ImportError:
 
 from os.path import dirname, normpath
 from os.path import join as pathjoin
+
+from datetime import datetime
 
 from django.conf import settings
 from django.test import TestCase
@@ -84,6 +88,19 @@ class ViewTestCase(BaseTestCase):
         self.assertEqual(json['a'], '12345')
         self.assertEqual(json['b'], 'abcde')
 
+    def test_expiration(self):
+        "Test JWT exp field handling"
+        r = self.client.post('/set/', { 'a': '12345', 'b': 'abcde' })
+        self.assertEqual(r.status_code, 200)
+        fields = session.verify_jwt(r.cookies[settings.SESSION_COOKIE_NAME].value)
+        # JWT expiration should exceed cookie expiration.
+        expires = r.cookies[settings.SESSION_COOKIE_NAME]['expires']
+        # Normalize date format (different Django versions use - or <space>)
+        expires = expires.replace('-', ' ')
+        # format: "Fri, 14 Aug 2020 19:27:28 GMT"
+        expires = int(time.mktime(datetime.strptime(expires, '%a, %d %b %Y %H:%M:%S %Z').timetuple()))
+        self.assertGreater(expires, fields['exp'])
+        
 
 class TestClientTestCase(BaseTestCase):
     def test_login(self):
