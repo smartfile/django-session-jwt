@@ -38,5 +38,8 @@ jobs:
       script: echo "Deploying to PyPI ..."
       deploy:
         provider: pypi
+        user: Ben.Timby
+        password:
+          secure: j86aUYq6Yq3GaMZGMVda1SkYGaHQWySfk/SKAxVpGrjZA5CH6ffChuuL1YZ6buqVDQkxmle++WmPmwLMRfqtsQghgzPbMdbwMpaYa2iZyM2Uqjlm5ZqLW2RRRO5l4TG32qVkZZJGNR4JnPjjE8wYQemi40HoQrS4GrSBnBTnptXWcZk5sqFZ/fuczq3KFnnJaooCqdXzaudZu4itleu7vQ1ObGSXgG25KouF8bQWP13200qkzCayoU7gYJpEr1dOSkIwlqnJ5A10DwNRIoKOsjiOGPCdSvCTSqv/EvLjp2k6wjTkGTDBqavrUWN2ihuq8omDTG3pQ+RU1GbvlNashIvUPfq8EDHR8wyG57SQ+BTMJiRw83igAZxxQqyQpt3cVWa+jMoLTQvf3TG/Hk83Yj6TGY6zR2/kZpGyCqLjxpTv2latTuILplfy6YsPJF9geDBYg+lhXWab2whfvk1RsEL0NrYoCtHSSqaDcs8wbq7wlb1hAAvEfpVWQGSJCFfytjUr1KNU4DN5UIBoZGU6J8fF+oPTwDlB22ZvKKwlj/vsHqsFwOLz+BJz3Fx2LScwi+LddzW5JAhk3ABD1n/KqGLdqe/eZk7QVIKs8nd19nN7BgXS64k+fRWW7XDHVhybuaCWtJrdsVoKyyI+/UNOn+sCF5U3xvE6QngrkeOB1bU=
         on:
           tags: true
