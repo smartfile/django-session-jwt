@@ -123,7 +123,7 @@ def create_jwt(user, session_key, expires=None):
     }
     if expires:
         # Set a future expiration date.
-        fields['exp'] = datetime.now() + timedelta(seconds=expires)
+        fields['exp'] = datetime.utcnow() + timedelta(seconds=expires)
 
     for attrname, sname, _ in FIELDS:
         try:
@@ -164,7 +164,7 @@ class SessionMiddleware(BaseSessionMiddleware):
 
         # Determine if JWT is more than halfway through it's lifetime.
         expires = getattr(request, 'session', {}).get('jwt', {}).get('exp', None)
-        halftime = time.mktime((datetime.now() + timedelta(seconds=EXPIRES / 2)).timetuple())
+        halftime = time.mktime((datetime.utcnow() + timedelta(seconds=EXPIRES / 2)).timetuple())
         halflife = expires and expires <= halftime
 
         # Behave the same as contrib.sessions, only recreate the JWT if the session
