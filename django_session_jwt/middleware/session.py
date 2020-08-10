@@ -74,10 +74,21 @@ def _parse_fields(fields):
     return fields
 
 
+def _parse_callable(f):
+    if not f:
+        return
+
+    module_name, _, f_name = f.rpartition('.')
+    m = import_module(module_name)
+
+    return getattr(m, f_name)
+
+
 DJANGO_SESSION_JWT = getattr(settings, 'DJANGO_SESSION_JWT', {})
 SESSION_FIELD = DJANGO_SESSION_JWT.get('SESSION_FIELD', 'sk')
 KEY, PUBKEY, ALGO = _parse_key(DJANGO_SESSION_JWT.get('KEY', settings.SECRET_KEY))
 FIELDS = _parse_fields(DJANGO_SESSION_JWT.get('FIELDS', []))
+CALLABLE = _parse_callable(DJANGO_SESSION_JWT.get('CALLABLE'))
 EXPIRES = DJANGO_SESSION_JWT.get('EXPIRES', None)
 LOGGER = logging.getLogger(__name__)
 LOGGER.addHandler(logging.NullHandler())
@@ -133,6 +144,9 @@ def create_jwt(user, session_key, expires=None):
             # Omit missing fields:
             LOGGER.warning('Could not get missing field %s from user', attrname)
             continue
+
+    if CALLABLE:
+        fields.update(CALLABLE(user))
 
     return jwt.encode(fields, KEY, algorithm=ALGO).decode('utf8')
 
