@@ -77,6 +77,7 @@ class ViewTestCase(BaseTestCase):
         self.assertTrue('username' in fields) # long form
         self.assertTrue('e' in fields)        # short form
         self.assertTrue('email' in fields)    # long form
+        self.assertTrue('foo' in fields)      # from callable
 
     def test_session(self):
         "Test persisting session data"
@@ -114,3 +115,4 @@ class TestClientTestCase(BaseTestCase):
         self.assertTrue('username' in fields) # long form
         self.assertTrue('e' in fields)        # short form
         self.assertTrue('email' in fields)    # long form
+        self.assertTrue('foo' in fields)      # from callable

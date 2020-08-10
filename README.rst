@@ -50,7 +50,7 @@ Then modify settings.py:
         ],
 
         # You can also populate the JWT fields by configuring your own callable. The
-        # callable should return a dictionary.
+        # callable should return a dictionary. The function should optionally accept user.
         'CALLABLE': 'some.module.with.a.function',
 
         # KEY can also be a tuple in order to specify public and private keys.

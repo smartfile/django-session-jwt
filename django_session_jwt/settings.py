@@ -119,6 +119,7 @@ DJANGO_SESSION_JWT = {
         ('username', 'u', 'username'),
         ('email', 'e', 'email'),
     ],
+    'CALLABLE': 'django_session_jwt.get_fields',
     'KEY': SECRET_KEY,
     # The default, uncomment to override:
     # 'SESSION_FIELD': 'sk',
