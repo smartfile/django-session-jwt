@@ -14,6 +14,7 @@ from datetime import datetime
 from django.conf import settings
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.test.client import Client as BaseClient
 
 from django_session_jwt.middleware import session
 from django_session_jwt.test import Client
@@ -101,7 +102,14 @@ class ViewTestCase(BaseTestCase):
         # format: "Fri, 14 Aug 2020 19:27:28 GMT"
         expires = int(time.mktime(datetime.strptime(expires, '%a, %d %b %Y %H:%M:%S %Z').timetuple()))
         self.assertGreater(expires, fields['exp'])
-        
+
+    def test_anonymous_session(self):
+        "Test anonymous session"
+        client = BaseClient()
+        r = client.get('/get/')
+        self.assertEqual(r.status_code, 200)
+        self.assertIsNone(r.cookies.get(settings.SESSION_COOKIE_NAME))
+
 
 class TestClientTestCase(BaseTestCase):
     def test_login(self):
