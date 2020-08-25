@@ -120,7 +120,7 @@ def verify_jwt(blob):
 
         except KeyError:
             continue
-    
+
     return fields
 
 
@@ -168,7 +168,8 @@ class SessionMiddleware(BaseSessionMiddleware):
 
         session_key = fields.pop(SESSION_FIELD, None)
         request.session = self.SessionStore(session_key)
-        request.session['jwt'] = fields
+        if fields:
+            request.session['jwt'] = fields
 
     def process_response(self, request, response):
         # Rather than duplicating the session logic here, just allow super()
