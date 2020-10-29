@@ -9,6 +9,7 @@ env:
   - DJANGO=2.0
   - DJANGO=2.2
   - DJANGO=3.0
+  - DJANGO=3.1
 
 install:
   - python -m pip install -U pip==18.0
@@ -25,12 +26,18 @@ jobs:
       env: DJANGO=2.2
     - python: '2.7'
       env: DJANGO=3.0
+    - python: '2.7'
+      env: DJANGO=3.1
     - python: '3.4'
       env: DJANGO=2.2
     - python: '3.4'
       env: DJANGO=3.0
+    - python: '3.4'
+      env: DJANGO=3.1
     - python: '3.5'
       env: DJANGO=3.0
+    - python: '3.5'
+      env: DJANGO=3.1
   include:
     - stage: deploy
       python: '3.6'
