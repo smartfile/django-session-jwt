@@ -80,6 +80,8 @@ class ViewTestCase(BaseTestCase):
         self.assertTrue('username' in fields) # long form
         self.assertTrue('e' in fields)        # short form
         self.assertTrue('email' in fields)    # long form
+        self.assertFalse('i' in fields)       # short form
+        self.assertFalse('invalid' in fields) # long form
         self.assertTrue('foo' in fields)      # from callable
 
     def test_session(self):
