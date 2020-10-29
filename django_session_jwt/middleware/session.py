@@ -12,7 +12,6 @@ from importlib import import_module
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AnonymousUser
 from django.contrib.sessions.middleware import SessionMiddleware as BaseSessionMiddleware
 from django.core.exceptions import ImproperlyConfigured
 
@@ -173,7 +172,7 @@ class SessionMiddleware(BaseSessionMiddleware):
             request.session['jwt'] = fields
 
     def process_response(self, request, response):
-        if isinstance(request.user, AnonymousUser):
+        if not request.user.is_authenticated:
             # The user is unauthenticated. Try to determine the user by the
             # session JWT
             User = get_user_model()
