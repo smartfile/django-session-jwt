@@ -12,6 +12,7 @@ from os.path import join as pathjoin
 from datetime import datetime
 
 from django.conf import settings
+from django.test import override_settings
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.test.client import Client as BaseClient
@@ -19,6 +20,7 @@ from django.test.client import Client as BaseClient
 from django_session_jwt.middleware import session
 from django_session_jwt.test import Client
 
+from freezegun import freeze_time
 
 User = get_user_model()
 
@@ -82,6 +84,8 @@ class ViewTestCase(BaseTestCase):
 
     def test_session(self):
         "Test persisting session data"
+        r = self.client.post('/login/', {'username': 'john', 'password': 'password'})
+        self.assertEqual(r.status_code, 200)
         r = self.client.post('/set/', { 'a': '12345', 'b': 'abcde' })
         self.assertEqual(r.status_code, 200)
         r = self.client.get('/get/')
@@ -92,6 +96,8 @@ class ViewTestCase(BaseTestCase):
 
     def test_expiration(self):
         "Test JWT exp field handling"
+        r = self.client.post('/login/', {'username': 'john', 'password': 'password'})
+        self.assertEqual(r.status_code, 200)
         r = self.client.post('/set/', { 'a': '12345', 'b': 'abcde' })
         self.assertEqual(r.status_code, 200)
         fields = session.verify_jwt(r.cookies[settings.SESSION_COOKIE_NAME].value)
@@ -109,6 +115,26 @@ class ViewTestCase(BaseTestCase):
         r = client.get('/get/')
         self.assertEqual(r.status_code, 200)
         self.assertIsNone(r.cookies.get(settings.SESSION_COOKIE_NAME))
+
+    @override_settings(SESSION_SAVE_EVERY_REQUEST=True)
+    def test_unauthenicated_view(self):
+        "Test valid JWT with unauthenticated view"
+        client = BaseClient()
+        with freeze_time('2020-01-01T09:00:00'):
+            client.cookies[settings.SESSION_COOKIE_NAME] = session.create_jwt(
+                self.user,
+                self.client.session.session_key,
+            )
+            jwt1 = session.verify_jwt(
+                client.cookies[settings.SESSION_COOKIE_NAME].value)
+
+        with freeze_time('2020-01-01T09:05:00'):
+            r = client.get('/get/')
+
+            self.assertEqual(r.status_code, 200)
+            jwt2 = session.verify_jwt(
+                r.cookies.get(settings.SESSION_COOKIE_NAME).value)
+        self.assertNotEqual(jwt1['iat'], jwt2['iat'])
 
 
 class TestClientTestCase(BaseTestCase):
