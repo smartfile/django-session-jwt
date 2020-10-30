@@ -180,9 +180,8 @@ class SessionMiddleware(BaseSessionMiddleware):
                 user_id = request.session['jwt']['user_id']
                 user = User.objects.get(id=user_id)
             except (KeyError, User.DoesNotExist):
-                # Unable to determine the user. Allow the base class
-                # implementation to handle the response.
-                return super(SessionMiddleware, self).process_response(request, response)
+                # Unable to determine the user. ID will not be set in the JWT.
+                user = None
         else:
             user = request.user
 
