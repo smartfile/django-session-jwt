@@ -118,6 +118,7 @@ DJANGO_SESSION_JWT = {
         ('id', 'id', 'user_id'),
         ('username', 'u', 'username'),
         ('email', 'e', 'email'),
+        ('invalid', 'i', 'invalid'),
     ],
     'CALLABLE': 'django_session_jwt.get_fields',
     'KEY': SECRET_KEY,

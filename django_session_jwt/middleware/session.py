@@ -11,7 +11,7 @@ from jwt.exceptions import DecodeError, ExpiredSignatureError
 from importlib import import_module
 
 from django.conf import settings
-from django.utils.deprecation import MiddlewareMixin
+from django.contrib.auth import get_user_model
 from django.contrib.sessions.middleware import SessionMiddleware as BaseSessionMiddleware
 from django.core.exceptions import ImproperlyConfigured
 
@@ -172,6 +172,20 @@ class SessionMiddleware(BaseSessionMiddleware):
             request.session['jwt'] = fields
 
     def process_response(self, request, response):
+        if not request.user.is_authenticated:
+            # The user is unauthenticated. Try to determine the user by the
+            # session JWT
+            User = get_user_model()
+            try:
+                user_id = request.session['jwt']['user_id']
+                user = User.objects.get(id=user_id)
+            except (KeyError, User.DoesNotExist):
+                # Unable to determine the user. Allow the base class
+                # implementation to handle the response.
+                return super(SessionMiddleware, self).process_response(request, response)
+        else:
+            user = request.user
+
         # Rather than duplicating the session logic here, just allow super()
         # to do it's thing, then convert the session cookie (if any) when it's
         # done.
@@ -189,7 +203,7 @@ class SessionMiddleware(BaseSessionMiddleware):
             return response
 
         try:
-            convert_cookie(response.cookies, request.user)
+            convert_cookie(response.cookies, user)
 
         except (KeyError, AttributeError):
             # No cookie, no problem...
