@@ -7,7 +7,7 @@ verify_ssl = true
 freezegun = "*"
 
 [packages]
-pyjwt = "*"
+pyjwt = "<2.0"
 django = "*"
 cryptography = "*"
 mock = "*"

@@ -13,7 +13,7 @@ env:
 
 install:
   - python -m pip install -U pip==18.0
-  - pipenv install --dev --ignore-pipfile
+  - pipenv install --dev --skip-lock
   - pip install --timeout=30 -q Django==$DJANGO
   - pip install --timeout=30 -q -e .
 script: make ci
