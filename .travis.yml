@@ -12,7 +12,7 @@ env:
   - DJANGO=3.1
 
 install:
-  - python -m pip install -U pip==18.0
+  - python -m pip install -U pip~=21.0
   - pipenv install --dev --skip-lock
   - pip install --timeout=30 -q Django==$DJANGO
   - pip install --timeout=30 -q -e .
