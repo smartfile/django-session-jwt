@@ -9,7 +9,7 @@ freezegun = "*"
 [packages]
 pyjwt = "<2.0"
 django = "*"
-cryptography = "*"
+cryptography = "~=3.2.1"
 mock = "*"
 coveralls = "*"
 coverage = "*"
