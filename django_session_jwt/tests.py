@@ -1,10 +1,5 @@
 import time
-
-try:
-    from unittest import mock
-
-except ImportError:
-    import mock
+from unittest import mock
 
 from os.path import dirname, normpath
 from os.path import join as pathjoin
