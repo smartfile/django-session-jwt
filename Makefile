@@ -9,7 +9,7 @@ lint: .venv
 	pipenv run pylint django_session_jwt --ignore=settings.py,models.py,admin.py,urls.py,wsgi.py,apps.py
 
 ci:
-	coverage run manage.py test django_session_jwt
+	pipenv run coverage run manage.py test django_session_jwt
 
 install:
 	python setup.py install
