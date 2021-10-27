@@ -29,7 +29,14 @@ Then modify settings.py:
 
 .. code-block:: python
 
-    SESSION_ENGINE='django_session_jwt.engine'
+    # Replace Django's SessionMiddleware
+    MIDDLEWARE = [
+        ...
+        # "django.contrib.sessions.middleware.SessionMiddleware",
+        "django_session_jwt.middleware.SessionMiddleware",
+        ...
+    ]
+
     SESSION_COOKIE_NAME='sessionid'
 
     DJANGO_SESSION_JWT = {
