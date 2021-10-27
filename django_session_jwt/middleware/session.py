@@ -148,7 +148,10 @@ def create_jwt(user, session_key, expires=None):
     if CALLABLE:
         fields.update(CALLABLE(user))
 
-    return jwt.encode(fields, KEY, algorithm=ALGO).decode('utf8')
+    token = jwt.encode(fields, KEY, algorithm=ALGO)
+    if isinstance(token, bytes):
+        token = token.decode('utf8')
+    return token
 
 
 def convert_cookie(cookies, user):
