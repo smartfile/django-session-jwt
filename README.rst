@@ -1,8 +1,8 @@
 .. image:: https://coveralls.io/repos/github/smartfile/django-session-jwt/badge.svg?branch=master
     :target: https://coveralls.io/github/smartfile/django-session-jwt?branch=master
 
-.. image:: https://travis-ci.org/smartfile/django-session-jwt.svg?branch=master
-    :target: https://travis-ci.org/smartfile/django-session-jwt
+.. image:: https://github.com/smartfile/django-session-jwt/actions/workflows/ci.yml/badge.svg
+    :target: https://github.com/smartfile/django-session-jwt/actions
 
 .. image:: https://badge.fury.io/py/django-session-jwt.svg
     :target: https://badge.fury.io/py/django-session-jwt
