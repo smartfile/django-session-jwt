@@ -27,9 +27,16 @@ This module respects the settings for ``django.contrib.sessions`` and provides a
 
 Then modify settings.py:
 
-::
+.. code-block:: python
 
-    SESSION_ENGINE='django_session_jwt.engine'
+    # Replace Django's SessionMiddleware
+    MIDDLEWARE = [
+        ...
+        # "django.contrib.sessions.middleware.SessionMiddleware",
+        "django_session_jwt.middleware.SessionMiddleware",
+        ...
+    ]
+
     SESSION_COOKIE_NAME='sessionid'
 
     DJANGO_SESSION_JWT = {
@@ -53,8 +60,9 @@ Then modify settings.py:
         # callable should return a dictionary. The function should optionally accept user.
         'CALLABLE': 'some.module.with.a.function',
 
-        # KEY can also be a tuple in order to specify public and private keys.
+        # KEY can also be a tuple in order to specify private and public keys.
         'KEY': 'string value or path to PEM key file',
+        # 'KEY': (private_key_or_path, public_key_or_path),
 
         # The session field is used to store the session key within the JWT. The default
         # is 'sk' but it can be overridden.
