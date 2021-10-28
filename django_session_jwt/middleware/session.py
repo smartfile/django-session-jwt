@@ -149,8 +149,11 @@ def create_jwt(user, session_key, expires=None):
         fields.update(CALLABLE(user))
 
     token = jwt.encode(fields, KEY, algorithm=ALGO)
-    if isinstance(token, bytes):
+    try:
+        # PyJWT 1.x returns bytes, 2.x returns a str
         token = token.decode('utf8')
+    except AttributeError:
+        pass
     return token
 
 
