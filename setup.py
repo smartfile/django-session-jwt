@@ -41,7 +41,7 @@ setup(
     url = 'http://github.com/smartfile/' + package_name + '/',
     license = 'MIT',
     install_requires = [
-        'pyjwt',
+        'pyjwt>=2',
     ],
     packages = find_packages(),
     classifiers = (
