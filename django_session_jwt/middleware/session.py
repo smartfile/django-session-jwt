@@ -172,7 +172,7 @@ class SessionMiddleware(BaseSessionMiddleware):
             request.session['jwt'] = fields
 
     def process_response(self, request, response):
-        if not request.user.is_authenticated:
+        if not hasattr(request, 'user') or not request.user.is_authenticated:
             # The user is unauthenticated. Try to determine the user by the
             # session JWT
             User = get_user_model()
