@@ -75,8 +75,9 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE = (
-    'django.middleware.common.CommonMiddleware',
     'django_session_jwt.middleware.SessionMiddleware',
+    # MiddlewareFailTestCase relies on this ordering.
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
