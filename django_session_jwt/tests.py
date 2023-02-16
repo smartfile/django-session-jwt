@@ -133,6 +133,16 @@ class ViewTestCase(BaseTestCase):
                 r.cookies.get(settings.SESSION_COOKIE_NAME).value)
         self.assertNotEqual(jwt1['iat'], jwt2['iat'])
 
+    def test_middleware_early_return(self):
+        """
+        By passing an incorrect HOST, CommonMiddleware returns early before
+        AuthenticationMiddleware is reached. We test this to ensure we don't error in
+        process_response, and end up hiding the real error with a HTTP 500
+        """
+        response = self.client.post('/login/', {'username': 'john', 'password': 'password'},
+            HTTP_HOST="blahblah.com")
+        self.assertEqual(response.status_code, 400)
+
 
 class TestClientTestCase(BaseTestCase):
     def test_login(self):
