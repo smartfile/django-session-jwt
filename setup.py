@@ -44,12 +44,12 @@ setup(
         'pyjwt>=2',
     ],
     packages = find_packages(),
-    classifiers = (
+    classifiers = [
           'Development Status :: 4 - Beta',
           'Intended Audience :: Developers',
           'Operating System :: OS Independent',
           'Programming Language :: Python :: 2',
           'Programming Language :: Python :: 3',
           'Topic :: Software Development :: Libraries :: Python Modules',
-    ),
+    ],
 )
