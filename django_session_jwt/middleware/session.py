@@ -89,7 +89,9 @@ SESSION_FIELD = DJANGO_SESSION_JWT.get('SESSION_FIELD', 'sk')
 KEY, PUBKEY, ALGO = _parse_key(DJANGO_SESSION_JWT.get('KEY', settings.SECRET_KEY))
 FIELDS = _parse_fields(DJANGO_SESSION_JWT.get('FIELDS', []))
 CALLABLE = _parse_callable(DJANGO_SESSION_JWT.get('CALLABLE'))
-EXPIRES = DJANGO_SESSION_JWT.get('EXPIRES', None)
+EXPIRES = DJANGO_SESSION_JWT.get('EXPIRES', 10 * 60)
+JWT_USER_ID_ATTRIBUTE = DJANGO_SESSION_JWT.get('JWT_USER_ID_ATTRIBUTE', 'user_id')
+USER_MODEL_ID_COLUMN = DJANGO_SESSION_JWT.get('USER_MODEL_ID_COLUMN', 'id')
 LOGGER = logging.getLogger(__name__)
 LOGGER.addHandler(logging.NullHandler())
 
@@ -177,8 +179,8 @@ class SessionMiddleware(BaseSessionMiddleware):
             # session JWT
             User = get_user_model()
             try:
-                user_id = request.session['jwt']['user_id']
-                user = User.objects.get(id=user_id)
+                user_id = request.session['jwt'][JWT_USER_ID_ATTRIBUTE]
+                user = User.objects.get({USER_MODEL_ID_COLUMN: user_id})
             except (KeyError, User.DoesNotExist):
                 # Unable to determine the user. ID will not be set in the JWT.
                 user = None

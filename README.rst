@@ -67,6 +67,19 @@ Then modify settings.py:
         # The session field is used to store the session key within the JWT. The default
         # is 'sk' but it can be overridden.
         'SESSION_FIELD': 'sk',
+
+        # The JWT token expiration time, in seconds.
+        # Defaults to 10 minutes.
+        'EXPIRES': 10 * 60,  # 10 minutes
+
+        # The name of the attribute in the JWT token which uniquely identifies the user.
+        # Defaults to 'user_id'.
+        'JWT_USER_ID_ATTRIBUTE': 'user_id',
+
+        # The name of the database column which uniquely identifies a user in the model.
+        # Defaults to 'id'.
+        'USER_MODEL_ID_COLUMN': 'id',
+
         ...
     }
 
